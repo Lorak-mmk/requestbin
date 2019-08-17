@@ -71,11 +71,12 @@ app.jinja_env.filters['short_date'] = short_date
 app.add_url_rule('/', 'views.home')
 app.add_url_rule('/<path:name>', 'views.bin', methods=['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS', 'HEAD', 'PATCH', 'TRACE'])
 
-app.add_url_rule('/docs/<name>', 'views.docs')
+# app.add_url_rule('/docs/<name>', 'views.docs')
 app.add_url_rule('/api/v1/bins', 'api.bins', methods=['POST'])
 app.add_url_rule('/api/v1/bins/<name>', 'api.bin', methods=['GET'])
 app.add_url_rule('/api/v1/bins/<bin>/requests', 'api.requests', methods=['GET'])
 app.add_url_rule('/api/v1/bins/<bin>/requests/<name>', 'api.request', methods=['GET'])
+app.add_url_rule('/api/v1/config/<bin>', 'api.config', methods=['POST'])
 
 app.add_url_rule('/api/v1/stats', 'api.stats')
 

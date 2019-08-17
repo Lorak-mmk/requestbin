@@ -1,16 +1,40 @@
 {% extends "layout.html" %}
-{% block title %}RequestBin - {{bin.name}}{% endblock %}
+{% block title %}BinArmiaPrezesa - {{bin.name}}{% endblock %}
 {% block icon %}<link rel="shortcut icon" href="{{bin.favicon_uri}}" />{% endblock %}
 
 {% block sidebar %}{% endblock %}
 
 {% block binurl %}
   <a href="/{{bin.name}}?inspect"><i class="icon-circle icon-2x" style="color: rgb{{bin.color}}"></i></a>
-  <input type="text" value="{{base_url}}/{{bin.name}}" onclick="this.select()" />
+  <input type="text" value="{{base_url}}/{{bin.name}}" placeholder="URL" onclick="this.select()" />
+  <input id="respTxt" type="text" value="ok\n" placeholder="Response text" onkeydown="respTxt()" onclick="this.select()" />
   {% if bin.private %}<i class="icon-lock"></i>{% endif %}
 {% endblock %}
 
 {% block head %}
+<script>
+function respTxt() {
+    var rt = document.getElementById('respTxt');
+    if (this.event.which == 13 || this.event.keyCode == 13) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", '/api/v1/config/{{bin.name}}', true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+      xhr.onreadystatechange = function() {
+          if (this.readyState === XMLHttpRequest.DONE) {
+              var obj = JSON.parse(this.response);
+              if(obj['result'] != 0)
+                alert("Unable to change response text:\n" + obj['error']);
+              else
+                alert('Success')
+          }
+      }
+      xhr.send("responseText=" + rt.value);
+      return false;
+    }
+    return true;
+}
+</script>
 {% endblock %}
 
 {% block content %}
@@ -20,7 +44,7 @@
           <div class="row-fluid">
             <div class="span4">
               {{base_url}}<br>
-              <span class="method">{{request.method}}</span> 
+              <span class="method">{{request.method}}</span>
               <span class="absolute-path">{{request.path}}</span><span class="querystring">{{request.query_string|to_qs}}</span>
             </div>
             <div class="span6 content">
@@ -44,7 +68,7 @@
 
       <h4 class="text-center">Bin URL</h4>
       <h2 class="text-center">
-        <input class="xxlarge input-xxlarge" type="text" value="{{base_url}}/{{bin.name}}" onclick="this.select()" style="border-color: rgb{{bin.color}}; border-width: 3px;" /></h2>
+        <input class="xxlarge input-xxlarge" type="text" value="{{base_url}}/{{bin.name}}" onclick="this.select()" style="border-color: rgb{{bin.color}}; border-width: 3px; background-color: #000; color:#fff" /></h2>
       <p class="text-center">{% if bin.private %}This is a private bin. Requests are only viewable from this computer.{% endif %}
 
       <hr>
@@ -54,51 +78,34 @@
       <h4>Make a request to get started.</h4>
 
       <h5>cURL</h5>
-      <pre>curl -X POST -d "fizz=buzz" {{base_url}}/{{bin.name}}</pre>
+      <pre class="prettyprint">curl -X POST -d "fizz=buzz" {{base_url}}/{{bin.name}}</pre>
 
-      <h5>Python (with Requests)</h5>
+      <h5>Python3 (with Requests)</h5>
       <pre class="prettyprint">import requests, time
 r = requests.post('{{base_url}}/{{bin.name}}', data={"ts":time.time()})
-print r.status_code
-print r.content</pre>
+print(r.status_code)
+print(r.content)</pre>
+
+      <h5>JavaScript</h5>
+      <pre class="prettyprint">var http = new XMLHttpRequest();
+var url = '{{base_url}}/{{bin.name}}';
+http.open('POST', url, true);
+http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+http.onreadystatechange = function() {
+    if(http.readyState == 4 && http.status == 200)
+        alert(http.responseText);
+}
+http.send('fizz=buzz');</pre>
 
       <h5>Node.js (with request)</h5>
       <pre class="prettyprint">var request = require('request');
-var url ='{{base_url}}/{{bin.name}}'
-request(url, function (error, response, body) {
-  if (!error) {
-    console.log(body);
-  }
-});</pre>
-
-      <h5>Ruby</h5>
-      <pre class="prettyprint">require 'open-uri'
-result = open('{{base_url}}/{{bin.name}}')
-result.lines { |f| f.each_line {|line| p line} }</pre>
-
-      <h5>C# / .NET</h5>
-      <pre class="prettyprint">using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace RequestBinExample
-{
-  class Program
-  {
-    static void Main(string[] args)
-    {
-      MakeRequest();
-    }
-
-    private static async Task MakeRequest()
-    {
-      var httpClient = new HttpClient();
-      var response = await httpClient.GetAsync(new Uri("{{base_url}}/{{bin.name}}"));
-      var body = await response.Content.ReadAsStringAsync();
-      Console.WriteLine(body);
-    }
-  }
-}</pre>
+    var url ='{{base_url}}/{{bin.name}}'
+    request(url, function (error, response, body) {
+      if (!error) {
+        console.log(body);
+      }
+    });</pre>
 
       <h5>Java</h5>
       <pre class="prettyprint">import org.apache.commons.httpclient.*;
@@ -140,11 +147,9 @@ public class RequestBinTutorial {
       <div class="alert-message block-message info">
         <h4>Limits</h4>
         <p>This {% if bin.private %}<strong>private</strong>{% endif %}
-        bin will keep the last 20 requests made to it and remain available for 48 hours after it was created.
+        bin will keep the last 2000 requests made to it and remain available for 48 hours after it was created.
         However, data might be cleared at any time, so <strong>treat bins as highly ephemeral</strong>.</p>
 
-        <h4>Need more?</h4>
-        <p><a href="https://www.runscope.com/?utm_source=partner&amp;utm_medium=link&amp;utm_campaign=requestbin">Sign up for a free Runscope account</a>. Runscope request captures give you live updates, permanent URLs, file handling and much more.</p>
       </div>
 {% endblock %}
 
@@ -168,7 +173,7 @@ public class RequestBinTutorial {
             {% else %}
               <p class="keypair"><strong>{{k}}:</strong> {{v}}</p>
             {% endif %}
-          {% endfor %} 
+          {% endfor %}
         {% endif %}
       </div>
       <div class="span8">

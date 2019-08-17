@@ -68,3 +68,13 @@ def stats():
     resp = make_response(json.dumps(stats), 200)
     resp.headers['Content-Type'] = 'application/json'
     return resp
+
+@app.endpoint('api.config')
+def config(bin):
+    try:
+        bin = db.lookup_bin(bin)
+    except KeyError:
+        return _response({'result': 1, 'error': "Bin not found"}, 404)
+    bin.responseText = request.form.get('responseText', 'ok\n')
+
+    return _response({'result': 0}, 200)

@@ -65,8 +65,8 @@ header {
   overflow: auto;
 }
 .header-wrap {
-  background: #ffffff;
-  color: #061427;
+  background: #061427;
+  color: #ffffff;
   padding: 0px 20px 0px;
   border-bottom: 1px solid #f9f9f9;
 }
@@ -85,10 +85,10 @@ header {
 }
 .logo,
 .logo a {
-  color: #999999;
+  color: #cec7c7;
 }
 .logo a:hover {
-  color: #1b70e0;
+  color: #88c46a;
 }
 .nav-menu {
   list-style: none;
@@ -103,6 +103,8 @@ header {
   margin-left: 20px;
 }
 .nav-menu input {
+  background-color: #000;
+  color: #fff;
   vertical-align: bottom;
   margin: 0;
 }
@@ -179,8 +181,8 @@ header {
   margin-top: 0;
 }
 .content-wrap {
-  color: #061427;
-  background: #ffffff;
+  color: #ffffff;
+  background: #061427;
   padding: 20px 20px 80px 20px;
 }
 .footer-wrap {
@@ -534,18 +536,15 @@ header {
   color: #999999;
 }
 .message-list.new {
-  background-color: #fffcf9;
   border-bottom-color: #fee9cc;
 }
 .message-list {
-  background-color: #eeeeee;
   padding: 10px;
 }
 .message-list .method {
   font-weight: bold;
 }
 .message-list .content i {
-  color: #555555;
 }
 .message-list .times .icon-time,
 .message-list .sizes .icon-cloud-download,
