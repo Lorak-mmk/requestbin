@@ -610,3 +610,45 @@ input.xxlarge {
   font-size: 42px;
   height: auto;
 }
+
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12rem;
+}
+.body-with-footer {
+  position: relative;
+  min-height: 100vh;
+  background: #061427;
+}
+.container-with-footer {
+  padding-bottom: 18rem;
+}
+
+.bins-header {
+  color: #fff;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.bins-list-header {
+  display: inline;
+  padding-right: 10px;
+}
+
+.bins-list {
+  display: inline;
+}
+
+ul#recent li {
+  display:inline;
+}
+
+.color-success {
+  color: #51a647;
+}

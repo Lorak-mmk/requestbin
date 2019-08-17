@@ -42,6 +42,7 @@ def bin(name):
             return "Private bin\n", 403
         update_recent_bins(name)
         return render_template('bin.html',
+            responeText=bin.responseText,
             bin=bin,
             base_url=request.scheme+'://'+request.host)
     else:

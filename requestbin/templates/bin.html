@@ -7,15 +7,17 @@
 {% block binurl %}
   <a href="/{{bin.name}}?inspect"><i class="icon-circle icon-2x" style="color: rgb{{bin.color}}"></i></a>
   <input type="text" value="{{base_url}}/{{bin.name}}" placeholder="URL" onclick="this.select()" />
-  <input id="respTxt" type="text" value="ok\n" placeholder="Response text" onkeydown="respTxt()" onclick="this.select()" />
+  <input id="respTxt" type="text" value="{{responeText}}" placeholder="Response text" onkeydown="respTxt()"/>
+  <i id="respChgOk" class="icon-ok color-success" style="display: none;"></i>
   {% if bin.private %}<i class="icon-lock"></i>{% endif %}
 {% endblock %}
 
 {% block head %}
 <script>
 function respTxt() {
-    var rt = document.getElementById('respTxt');
     if (this.event.which == 13 || this.event.keyCode == 13) {
+      document.getElementById('respChgOk').style.display = 'none';
+      var rt = document.getElementById('respTxt');
       var xhr = new XMLHttpRequest();
       xhr.open("POST", '/api/v1/config/{{bin.name}}', true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -26,7 +28,7 @@ function respTxt() {
               if(obj['result'] != 0)
                 alert("Unable to change response text:\n" + obj['error']);
               else
-                alert('Success')
+                document.getElementById('respChgOk').style.display = 'inherit';
           }
       }
       xhr.send("responseText=" + rt.value);
