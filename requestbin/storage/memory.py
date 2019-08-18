@@ -36,6 +36,9 @@ class MemoryStorage():
         bin.add(request)
         self.request_count += 1
 
+    def set_response_text(self, bin, respTxt):
+        bin.responseText = respTxt
+
     def count_bins(self):
         return len(self.bins)
 

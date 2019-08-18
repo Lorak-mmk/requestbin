@@ -75,6 +75,6 @@ def config(bin):
         bin = db.lookup_bin(bin)
     except KeyError:
         return _response({'result': 1, 'error': "Bin not found"}, 404)
-    bin.responseText = request.form.get('responseText', 'ok\n')
 
+    db.set_response_text(bin, request.form.get('responseText', 'ok\n'))
     return _response({'result': 0}, 200)

@@ -38,6 +38,12 @@ class RedisStorage():
         self.redis.setnx(self._request_count_key(), 0)
         self.redis.incr(self._request_count_key())
 
+    def set_response_text(self, bin, respTxt):
+        bin.responseText = respTxt
+        key = self._key(bin.name)
+        self.redis.set(key, bin.dump())
+        self.redis.expireat(key, int(bin.created+self.bin_ttl))
+
     def count_bins(self):
         keys = self.redis.keys("{}_*".format(self.prefix))
         return len(keys)

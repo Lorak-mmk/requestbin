@@ -21,6 +21,9 @@ def create_bin(private=False):
 def create_request(bin, request):
     return db.create_request(bin, request)
 
+def set_response_text(bin, respTxt):
+    return db.set_response_text(bin, respTxt)
+
 def lookup_bin(name):
     name=re.split(r"[/.]", name)[0]
     return db.lookup_bin(name)
