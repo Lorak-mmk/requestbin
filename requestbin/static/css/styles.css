@@ -540,6 +540,7 @@ header {
 }
 .message-list {
   padding: 10px;
+  border-bottom: solid #fff 1px;
 }
 .message-list .method {
   font-weight: bold;
