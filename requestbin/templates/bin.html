@@ -102,36 +102,12 @@ http.send('fizz=buzz');</pre>
 
       <h5>Node.js (with request)</h5>
       <pre class="prettyprint">var request = require('request');
-    var url ='{{base_url}}/{{bin.name}}'
-    request(url, function (error, response, body) {
-      if (!error) {
+var url ='{{base_url}}/{{bin.name}}'
+request(url, function (error, response, body) {
+    if (!error) {
         console.log(body);
-      }
-    });</pre>
-
-      <h5>Java</h5>
-      <pre class="prettyprint">import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-
-import java.io.*;
-
-public class RequestBinTutorial {
-  public static void main(String[] args) {
-    HttpClient client = new HttpClient();
-    GetMethod method = new GetMethod("{{base_url}}/{{bin.name}}");
-    try {
-      int statusCode = client.executeMethod(method);
-      byte[] responseBody = method.getResponseBody();
-      System.out.println(new String(responseBody));
-    } catch (Exception e) {
-      System.err.println("Fatal error: " + e.getMessage());
-      e.printStackTrace();
-    } finally {
-      method.releaseConnection();
     }
-  }
-}</pre>
+});</pre>
 
       <h5>PHP</h5>
       <pre class="prettyprint">&lt;?php
