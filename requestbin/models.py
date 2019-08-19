@@ -25,6 +25,7 @@ class Bin(object):
         self.requests = []
         self.secret_key = os.urandom(24) if self.private else None
         self.responseText = 'ok\n'
+        self.url = self.name
 
     def json(self):
         return json.dumps(self.to_dict())
@@ -35,7 +36,8 @@ class Bin(object):
             color=self.color,
             name=self.name,
             request_count=self.request_count,
-            response_text=self.responseText)
+            response_text=self.responseText,
+            urls=self.url)
 
     def dump(self):
         o = copy.copy(self.__dict__)

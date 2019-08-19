@@ -33,22 +33,29 @@ def home():
 
 @app.endpoint('views.bin')
 def bin(name):
-    try:
-        bin = db.lookup_bin(name)
-    except KeyError:
-        return "Not found\n", 404
     if request.query_string == 'inspect':
+        try:
+            bin = db.lookup_bin(name)
+        except KeyError:
+            return "Not found\n", 404
+
         if bin.private and session.get(bin.name) != bin.secret_key:
             return "Private bin\n", 403
+
         update_recent_bins(name)
         return render_template('bin.html',
             responeText=bin.responseText,
+            url=bin.url,
             bin=bin,
             base_url=request.scheme+'://'+request.host,
             max_requests=config.MAX_REQUESTS,
             bin_ttl=config.BIN_TTL // 3600,
             bin_max_size=config.MAX_RAW_SIZE // 1024)
     else:
+        try:
+            bin = db.lookup_bin_by_url(name)
+        except KeyError:
+            return "Not found\n", 404
         db.create_request(bin, request)
         resp = make_response(bin.responseText)
         return resp

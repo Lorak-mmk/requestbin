@@ -77,4 +77,5 @@ def config(bin):
         return _response({'result': 1, 'error': "Bin not found"}, 404)
 
     db.set_response_text(bin, request.form.get('responseText', 'ok\n'))
+    db.set_bin_url(bin, request.form.get('url', bin.name))
     return _response({'result': 0}, 200)

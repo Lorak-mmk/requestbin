@@ -24,9 +24,15 @@ def create_request(bin, request):
 def set_response_text(bin, respTxt):
     return db.set_response_text(bin, respTxt)
 
+def set_bin_url(bin, url):
+    return db.set_bin_url(bin, url)
+
 def lookup_bin(name):
     name=re.split(r"[/.]", name)[0]
     return db.lookup_bin(name)
+
+def lookup_bin_by_url(url):
+    return db.lookup_bin_by_url(url)
 
 def count_bins():
     return db.count_bins()

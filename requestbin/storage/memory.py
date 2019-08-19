@@ -11,6 +11,7 @@ class MemoryStorage():
     def __init__(self, bin_ttl):
         self.bin_ttl = bin_ttl
         self.bins = {}
+        self.urls = {}
         self.request_count = 0
 
     def do_start(self):
@@ -30,6 +31,7 @@ class MemoryStorage():
     def create_bin(self, private=False):
         bin = Bin(private)
         self.bins[bin.name] = bin
+        self.urls[config.URL_DB_PREFIX + bin.url] = bin.name
         return self.bins[bin.name]
 
     def create_request(self, bin, request):
@@ -38,6 +40,11 @@ class MemoryStorage():
 
     def set_response_text(self, bin, respTxt):
         bin.responseText = respTxt
+
+    def set_bin_url(self, bin, url):
+        del self.urls[config.URL_DB_PREFIX + bin.url] # This might be expected behaviour
+        bin.url = url
+        self.urls[config.URL_DB_PREFIX + url] = bin.name
 
     def count_bins(self):
         return len(self.bins)
@@ -50,3 +57,8 @@ class MemoryStorage():
 
     def lookup_bin(self, name):
         return self.bins[name]
+
+    def lookup_bin_by_url(self, url):
+        url = config.URL_DB_PREFIX + url
+        binKey = self.urls[url]
+        return self.bins[binKey]

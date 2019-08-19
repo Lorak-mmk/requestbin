@@ -27,6 +27,10 @@ class RedisStorage():
         key = self._key(bin.name)
         self.redis.set(key, bin.dump())
         self.redis.expireat(key, int(bin.created+self.bin_ttl))
+
+        url = self._key(config.URL_DB_PREFIX + bin.url)
+        self.redis.set(url, key)
+        self.redis.expireat(url, int(bin.created+self.bin_ttl))
         return bin
 
     def create_request(self, bin, request):
@@ -43,6 +47,19 @@ class RedisStorage():
         key = self._key(bin.name)
         self.redis.set(key, bin.dump())
         self.redis.expireat(key, int(bin.created+self.bin_ttl))
+
+    def set_bin_url(self, bin, url):
+        self.redif.delete(bin.url)          # This might be expected behaviour
+
+        bin.url = url
+        url = self._key(config.URL_DB_PREFIX + url)
+        key = self._key(bin.name)
+
+        self.redis.set(key, bin.dump())
+        self.redis.expireat(key, int(bin.created+self.bin_ttl))
+
+        self.redis.set(url, key)
+        self.redis.expireat(url, int(bin.created+self.bin_ttl))
 
     def count_bins(self):
         keys = self.redis.keys("{}_*".format(self.prefix))
@@ -64,3 +81,18 @@ class RedisStorage():
         except TypeError:
             self.redis.delete(key) # clear bad data
             raise KeyError("Bin not found")
+
+    def lookup_bin_by_url(self, url):
+        url = self._key(config.URL_DB_PREFIX + url)
+        binKey = self.redis.get(url)
+        if binKey is None:
+            raise KeyError("Bin not found 2")
+
+        serialized_bin = self.redis.get(self._key(binKey))
+        try:
+            bin = Bin.load(serialized_bin)
+            return bin
+        except TypeError:
+            self.redis.delete(binKey)
+            self.redis.delete(url)
+            raise KeyError("Bin not found 3")
