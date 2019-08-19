@@ -125,7 +125,7 @@ request(url, function (error, response, body) {
       <div class="alert-message block-message info">
         <h4>Limits</h4>
         <p>This {% if bin.private %}<strong>private</strong>{% endif %}
-        bin will keep the last 2000 requests made to it and remain available for 48 hours after it was created.
+        bin will keep the last {{ max_requests }} requests (max. {{ bin_max_size }}KB each) made to it and remain available for {{ bin_ttl }} hours after it was created.
         However, data might be cleared at any time, so <strong>treat bins as highly ephemeral</strong>.</p>
 
       </div>
