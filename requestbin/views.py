@@ -50,7 +50,7 @@ def bin(name):
             base_url=request.scheme+'://'+request.host,
             max_requests=config.MAX_REQUESTS,
             bin_ttl=config.BIN_TTL // 3600,
-            bin_max_size=config.MAX_RAW_SIZE // 1024)
+            bin_max_size=config.MAX_RAW_SIZE // 1048576)
     else:
         try:
             bin = db.lookup_bin_by_url(name)

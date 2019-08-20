@@ -6,14 +6,51 @@
 
 {% block binurl %}
   <a href="/{{bin.name}}?inspect"><i class="icon-circle icon-2x" style="color: rgb{{bin.color}}"></i></a>
-  <input type="text" value="{{base_url}}/{{bin.name}}" placeholder="URL" onclick="this.select()" />
-  <input id="respTxt" type="text" value="{{responeText}}" placeholder="Response text" onkeydown="respTxt()"/>
-  <i id="respChgOk" class="icon-ok color-success" style="display: none;"></i>
+  <input type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" placeholder="URL" onclick="this.select()" onchange="blockModif()" />
+
+  <button type="button" class="btn-primary" onclick="showModal()">Options</button>
   {% if bin.private %}<i class="icon-lock"></i>{% endif %}
+
+<div id="settingsModal" class="modal hide" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" onclick="hideModal()">&times;</button>
+        <h4 class="modal-title">Bin settings</h4>
+      </div>
+      <div class="modal-body">
+        <b> Work in progess </b>
+        <div><div style="width: 150px;display:inline-block;">URL:</div> <input type="text" value="{{base_url}}/{{bin.url}}" placeholder="URL"/></div>
+        <div><div style="width: 150px;display:inline-block;">Response text:</div> <textarea value="{{responseText}}"></textarea></div>
+        <div><div style="width: 150px;display:inline-block;">Response MIME:</div> <select><option>text/html</option></select></div>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn-success" onclick="">Save</button>
+        <button type="button" class="btn-warning" onclick="hideModal()">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 {% endblock %}
 
 {% block head %}
 <script>
+function showModal() {
+  var md = document.getElementById('settingsModal')
+  md.style.display = 'block'
+}
+
+function hideModal() {
+  var md = document.getElementById('settingsModal')
+  md.style.display = 'none'
+}
+
+function blockModif() {
+  if(event.target.value != event.target.defaultValue)
+    event.target.value = event.target.defaultValue;
+}
+
 function respTxt() {
     if (this.event.which == 13 || this.event.keyCode == 13) {
       document.getElementById('respChgOk').style.display = 'none';
@@ -70,7 +107,7 @@ function respTxt() {
 
       <h4 class="text-center">Bin URL</h4>
       <h2 class="text-center">
-        <input class="xxlarge input-xxlarge" type="text" value="{{base_url}}/{{bin.name}}" onclick="this.select()" style="border-color: rgb{{bin.color}}; border-width: 3px; background-color: #000; color:#fff" /></h2>
+        <input class="xxlarge input-xxlarge" type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" onclick="this.select()" onchange="blockModif()" style="border-color: rgb{{bin.color}}; border-width: 3px; background-color: #000; color:#fff" /></h2>
       <p class="text-center">{% if bin.private %}This is a private bin. Requests are only viewable from this computer.{% endif %}
 
       <hr>
@@ -125,7 +162,7 @@ request(url, function (error, response, body) {
       <div class="alert-message block-message info">
         <h4>Limits</h4>
         <p>This {% if bin.private %}<strong>private</strong>{% endif %}
-        bin will keep the last {{ max_requests }} requests (max. {{ bin_max_size }}KB each) made to it and remain available for {{ bin_ttl }} hours after it was created.
+        bin will keep the last {{ max_requests }} requests (max. {{ bin_max_size }}MB each) made to it and remain available for {{ bin_ttl }} hours after it was created.
         However, data might be cleared at any time, so <strong>treat bins as highly ephemeral</strong>.</p>
 
       </div>

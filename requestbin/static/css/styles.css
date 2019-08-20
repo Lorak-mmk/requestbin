@@ -77,7 +77,6 @@ header {
   float: left;
 }
 .logo img {
-  margin-right: 10px;
   margin-top: -4px;
 }
 .logo-accent {
@@ -94,13 +93,8 @@ header {
   list-style: none;
   color: #999999;
   font-size: 16px;
-  margin-top: 20px;
+  margin-top: 10px;
   float: right;
-}
-.nav-menu li {
-  display: inline;
-  margin-right: 20px;
-  margin-left: 20px;
 }
 .nav-menu input {
   background-color: #000;
@@ -108,9 +102,18 @@ header {
   vertical-align: bottom;
   margin: 0;
 }
-.nav-menu:last-child li {
+.nav-menu li {
+  display: flex;
+  align-items: center;
+  margin-right: 0;
+}
+.nav-menu li > * {
+  margin-right: 5px;
+}
+.nav-menu li > :last-child {
   margin-right: 0px;
 }
+
 .nav-link,
 .nav-link a {
   color: #999999;
@@ -544,8 +547,6 @@ header {
 }
 .message-list .method {
   font-weight: bold;
-}
-.message-list .content i {
 }
 .message-list .times .icon-time,
 .message-list .sizes .icon-cloud-download,
