@@ -48,6 +48,12 @@ class RedisStorage():
         self.redis.set(key, bin.dump())
         self.redis.expireat(key, int(bin.created+self.bin_ttl))
 
+    def set_response_mime(self, bin, mime):
+        bin.responseMIME = mime
+        key = self._key(bin.name)
+        self.redis.set(key, bin.dump())
+        self.redis.expireat(key, int(bin.created+self.bin_ttl))
+
     def set_bin_url(self, bin, url):
         self.redif.delete(bin.url)          # This might be expected behaviour
 

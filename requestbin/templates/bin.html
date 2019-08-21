@@ -6,32 +6,10 @@
 
 {% block binurl %}
   <a href="/{{bin.name}}?inspect"><i class="icon-circle icon-2x" style="color: rgb{{bin.color}}"></i></a>
-  <input type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" placeholder="URL" onclick="this.select()" onchange="blockModif()" />
+  <input id="bin-url" type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" placeholder="URL" onclick="this.select()" onchange="blockModif()" />
 
-  <button type="button" class="btn-primary" onclick="showModal()">Options</button>
+  <button type="button" class="cbtn cbtn-dark" onclick="showModal()"><i class="icon-cog"></i> &nbsp;Options</button>
   {% if bin.private %}<i class="icon-lock"></i>{% endif %}
-
-<div id="settingsModal" class="modal hide" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" onclick="hideModal()">&times;</button>
-        <h4 class="modal-title">Bin settings</h4>
-      </div>
-      <div class="modal-body">
-        <b> Work in progess </b>
-        <div><div style="width: 150px;display:inline-block;">URL:</div> <input type="text" value="{{base_url}}/{{bin.url}}" placeholder="URL"/></div>
-        <div><div style="width: 150px;display:inline-block;">Response text:</div> <textarea value="{{responseText}}"></textarea></div>
-        <div><div style="width: 150px;display:inline-block;">Response MIME:</div> <select><option>text/html</option></select></div>
-      </div>
-      <div class="modal-footer">
-          <button type="button" class="btn-success" onclick="">Save</button>
-        <button type="button" class="btn-warning" onclick="hideModal()">Cancel</button>
-      </div>
-    </div>
-
-  </div>
-</div>
 {% endblock %}
 
 {% block head %}
@@ -51,27 +29,48 @@ function blockModif() {
     event.target.value = event.target.defaultValue;
 }
 
-function respTxt() {
-    if (this.event.which == 13 || this.event.keyCode == 13) {
-      document.getElementById('respChgOk').style.display = 'none';
-      var rt = document.getElementById('respTxt');
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", '/api/v1/config/{{bin.name}}', true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+function handleMimeOpts() {
+  var mimeType = document.getElementById('mimeOpt');
+  var selectedMime = mimeType.options[mimeType.selectedIndex].value;
 
-      xhr.onreadystatechange = function() {
-          if (this.readyState === XMLHttpRequest.DONE) {
-              var obj = JSON.parse(this.response);
-              if(obj['result'] != 0)
-                alert("Unable to change response text:\n" + obj['error']);
-              else
-                document.getElementById('respChgOk').style.display = 'inherit';
+  if(selectedMime == 'Other')
+    document.getElementById('mimeInput').style.display = 'inherit';
+  else
+  document.getElementById('mimeInput').style.display = 'none';
+}
+
+function sendModal() {
+  var url = document.getElementById('url-suffix').value;
+  var respTxt = document.getElementById('responseText').value;
+  var mimeType = document.getElementById('mimeOpt');
+  var mimeInput = document.getElementById('mimeInput').value;
+
+  var selectedMime = mimeType.options[mimeType.selectedIndex].value;
+  if(selectedMime != 'Other')
+    mimeInput = selectedMime;
+
+  var configRequest = 'responseText=' + encodeURIComponent(respTxt) +
+                      '&url=' + encodeURIComponent(url) +
+                      '&mimetype=' + encodeURIComponent(mimeInput);
+ 
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", '/api/v1/config/{{bin.name}}', true);
+  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  xhr.onreadystatechange = function() {
+      if (this.readyState === XMLHttpRequest.DONE) {
+          var obj = JSON.parse(this.response);
+          if(obj['result'] != 0)
+            alert("Unable to change bin settings:\n" + obj['error']);
+          else {
+            document.getElementById('bin-url').value = "{{ base_url }}/" + url;
+            document.getElementById('bin-url').defaultValue = "{{ base_url }}/" + url;
+            document.getElementById('bin-url-lg').value = "{{ base_url }}/" + url;
+            document.getElementById('bin-url-lg').defaultValue = "{{ base_url }}/" + url;
+            hideModal();
           }
       }
-      xhr.send("responseText=" + rt.value);
-      return false;
-    }
-    return true;
+  }
+  xhr.send(configRequest);
 }
 </script>
 {% endblock %}
@@ -107,7 +106,7 @@ function respTxt() {
 
       <h4 class="text-center">Bin URL</h4>
       <h2 class="text-center">
-        <input class="xxlarge input-xxlarge" type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" onclick="this.select()" onchange="blockModif()" style="border-color: rgb{{bin.color}}; border-width: 3px; background-color: #000; color:#fff" /></h2>
+        <input id="bin-url-lg" class="xxlarge input-xxlarge" type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" onclick="this.select()" onchange="blockModif()" style="border-color: rgb{{bin.color}}; border-width: 3px; background-color: #000; color:#fff" /></h2>
       <p class="text-center">{% if bin.private %}This is a private bin. Requests are only viewable from this computer.{% endif %}
 
       <hr>
@@ -165,6 +164,47 @@ request(url, function (error, response, body) {
         bin will keep the last {{ max_requests }} requests (max. {{ bin_max_size }}MB each) made to it and remain available for {{ bin_ttl }} hours after it was created.
         However, data might be cleared at any time, so <strong>treat bins as highly ephemeral</strong>.</p>
 
+      </div>
+      <div id="settingsModal" class="modal hide" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" onclick="hideModal()">&times;</button>
+              <h4 class="modal-title">Bin settings</h4>
+            </div>
+            <div class="modal-body">
+              <form class="cform">
+                <div class="cform-row">
+                  <p class="span3">URL suffix:</p>
+                  <input id="url-suffix" class="span9" type="text" value="{{bin.url}}" />
+                </div>
+                <div class="cform-row">
+                  <p class="span3">Response text:</p>
+                  <textarea id="responseText" class="span9">{{responseText}}</textarea>
+                </div>
+                <div class="cform-row">
+                  <p class="span3">Response MIME:</p>
+                  <select id="mimeOpt" class="span9" onchange="handleMimeOpts()">
+                    <option>text/html</option>
+                    <option>application/javascript</option>
+                    <option>image/png</option>
+                    <option>text/css</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="cform-row">
+                  <p class="span3"></p>
+                  <input id="mimeInput" class="span9 hide" type="text" placeholder="Other MIME type" />
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cbtn cbtn-success" onclick="sendModal()">Save</button>
+              <button type="button" class="cbtn cbtn-secondary" onclick="hideModal()">Cancel</button>
+            </div>
+          </div>
+      
+        </div>
       </div>
 {% endblock %}
 

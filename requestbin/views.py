@@ -44,7 +44,7 @@ def bin(name):
 
         update_recent_bins(name)
         return render_template('bin.html',
-            responeText=bin.responseText,
+            responseText=bin.responseText,
             url=bin.url,
             bin=bin,
             base_url=request.scheme+'://'+request.host,
@@ -58,4 +58,5 @@ def bin(name):
             return "Not found\n", 404
         db.create_request(bin, request)
         resp = make_response(bin.responseText)
+        resp.headers['Content-Type'] = bin.responseMIME
         return resp

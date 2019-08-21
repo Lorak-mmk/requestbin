@@ -654,3 +654,64 @@ ul#recent li {
 .color-success {
   color: #51a647;
 }
+
+
+.cbtn-dark {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #343a40;
+}
+
+.cbtn-success {
+	color: #fff;
+	background-color: #28a745;
+	border-color: #28a745;
+}
+
+.cbtn-secondary {
+	color: #fff;
+	background-color: #6c757d;
+	border-color: #6c757d;
+}
+
+.cbtn {
+	display: inline-block;
+	font-weight: 400;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	border: 1px solid transparent;
+	padding: .250rem .75rem;
+	font-size: 1rem;
+	line-height: 1.5;
+	border-radius: .25rem;
+	transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.cform-row {
+  display: flex;
+  align-items: center;
+}
+
+.cform p {
+  line-height: 35px;
+  margin: 0 !important;
+  color: #000;
+}
+
+.cform input {
+  margin: 0;
+}
+
+.modal-dialog {
+  color: #000;
+}
+
+.close {
+  line-height: 35px;
+  font-size: 30px;
+}

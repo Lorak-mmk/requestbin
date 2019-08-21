@@ -24,6 +24,9 @@ def create_request(bin, request):
 def set_response_text(bin, respTxt):
     return db.set_response_text(bin, respTxt)
 
+def set_response_mime(bin, mime):
+    return db.set_response_mime(bin, mime)
+
 def set_bin_url(bin, url):
     return db.set_bin_url(bin, url)
 

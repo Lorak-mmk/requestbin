@@ -40,6 +40,9 @@ class MemoryStorage():
 
     def set_response_text(self, bin, respTxt):
         bin.responseText = respTxt
+    
+    def set_response_mime(self, bin, mime):
+        bin.responseMIME = mime
 
     def set_bin_url(self, bin, url):
         del self.urls[config.URL_DB_PREFIX + bin.url] # This might be expected behaviour
