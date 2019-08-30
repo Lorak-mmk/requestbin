@@ -55,7 +55,7 @@ class RedisStorage():
         self.redis.expireat(key, int(bin.created+self.bin_ttl))
 
     def set_bin_url(self, bin, url):
-        self.redif.delete(bin.url)          # This might be expected behaviour
+        self.redis.delete(bin.url)          # This might be expected behaviour
 
         bin.url = url
         url = self._key(config.URL_DB_PREFIX + url)

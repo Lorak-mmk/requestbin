@@ -31,7 +31,7 @@ REDIS_PREFIX = "requestbin"
 BUGSNAG_KEY = ""
 
 if REALM == 'prod':
-    DEBUG = False
+    DEBUG = True
     ROOT_URL = "http://requestb.in"
 
     FLASK_SESSION_SECRET_KEY = os.environ.get("SESSION_SECRET_KEY", FLASK_SESSION_SECRET_KEY)
