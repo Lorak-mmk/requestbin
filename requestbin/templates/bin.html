@@ -62,10 +62,17 @@ function sendModal() {
           if(obj['result'] != 0)
             alert("Unable to change bin settings:\n" + obj['error']);
           else {
-            document.getElementById('bin-url').value = "{{ base_url }}/" + url;
-            document.getElementById('bin-url').defaultValue = "{{ base_url }}/" + url;
-            document.getElementById('bin-url-lg').value = "{{ base_url }}/" + url;
-            document.getElementById('bin-url-lg').defaultValue = "{{ base_url }}/" + url;
+            var smallUrl = document.getElementById('bin-url');
+            var largeUrl = document.getElementById('bin-url-lg');
+
+            if(smallUrl) {
+              smallUrl.value = "{{ base_url }}/" + url;
+              smallUrl.defaultValue = "{{ base_url }}/" + url;
+            }
+            if(largeUrl) {
+              largeUrl.value = "{{ base_url }}/" + url;
+              largeUrl.defaultValue = "{{ base_url }}/" + url;
+            }
             hideModal();
           }
       }
