@@ -1,124 +1,296 @@
 {% extends "layout.html" %}
 {% block title %}BinArmiaPrezesa - {{bin.name}}{% endblock %}
-{% block icon %}<link rel="shortcut icon" href="{{bin.favicon_uri}}" />{% endblock %}
+{% block icon %}
+<link rel="shortcut icon" href="{{bin.favicon_uri}}" />{% endblock %}
 
 {% block sidebar %}{% endblock %}
 
 {% block binurl %}
-  <a href="/{{bin.name}}?inspect"><i class="icon-circle icon-2x" style="color: rgb{{bin.color}}"></i></a>
-  <input id="bin-url" type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" placeholder="URL" onclick="this.select()" onchange="blockModif()" />
+<a href="/{{bin.name}}?inspect"><i class="icon-circle icon-2x" style="color: rgb{{bin.color}}"></i></a>
+<input id="bin-url" type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}"
+  placeholder="URL" onclick="this.select()" onchange="blockModif()" />
 
-  <button type="button" class="cbtn cbtn-dark" onclick="showModal()"><i class="icon-cog"></i> &nbsp;Options</button>
-  {% if bin.private %}<i class="icon-lock"></i>{% endif %}
+<button type="button" class="cbtn cbtn-dark" onclick="showModal()"><i class="icon-cog"></i> &nbsp;Options</button>
+{% if bin.private %}<i class="icon-lock"></i>{% endif %}
 {% endblock %}
 
 {% block head %}
 <script>
-function showModal() {
-  var md = document.getElementById('settingsModal')
-  md.style.display = 'block'
-}
-
-function hideModal() {
-  var md = document.getElementById('settingsModal')
-  md.style.display = 'none'
-}
-
-function blockModif() {
-  if(event.target.value != event.target.defaultValue)
-    event.target.value = event.target.defaultValue;
-}
-
-function handleMimeOpts() {
-  var mimeType = document.getElementById('mimeOpt');
-  var selectedMime = mimeType.options[mimeType.selectedIndex].value;
-
-  if(selectedMime == 'Other')
-    document.getElementById('mimeInput').style.display = 'inherit';
-  else
-  document.getElementById('mimeInput').style.display = 'none';
-}
-
-function sendModal() {
-  var url = document.getElementById('url-suffix').value;
-  var respTxt = document.getElementById('responseText').value;
-  var mimeType = document.getElementById('mimeOpt');
-  var mimeInput = document.getElementById('mimeInput').value;
-
-  var selectedMime = mimeType.options[mimeType.selectedIndex].value;
-  if(selectedMime != 'Other')
-    mimeInput = selectedMime;
-
-  var configRequest = 'responseText=' + encodeURIComponent(respTxt) +
-                      '&url=' + encodeURIComponent(url) +
-                      '&mimetype=' + encodeURIComponent(mimeInput);
- 
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", '/api/v1/config/{{bin.name}}', true);
-  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-  xhr.onreadystatechange = function() {
-      if (this.readyState === XMLHttpRequest.DONE) {
-          var obj = JSON.parse(this.response);
-          if(obj['result'] != 0)
-            alert("Unable to change bin settings:\n" + obj['error']);
-          else {
-            var smallUrl = document.getElementById('bin-url');
-            var largeUrl = document.getElementById('bin-url-lg');
-
-            if(smallUrl) {
-              smallUrl.value = "{{ base_url }}/" + url;
-              smallUrl.defaultValue = "{{ base_url }}/" + url;
-            }
-            if(largeUrl) {
-              largeUrl.value = "{{ base_url }}/" + url;
-              largeUrl.defaultValue = "{{ base_url }}/" + url;
-            }
-            hideModal();
-          }
-      }
+  function escapeHtml(unsafe) {
+      if(unsafe == undefined)
+        return 'undefined';
+      return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
   }
-  xhr.send(configRequest);
-}
+
+  function showModal() {
+    var md = document.getElementById('settingsModal')
+    md.style.display = 'block'
+  }
+
+  function hideModal() {
+    var md = document.getElementById('settingsModal')
+    md.style.display = 'none'
+  }
+
+  function blockModif() {
+    if (event.target.value != event.target.defaultValue)
+      event.target.value = event.target.defaultValue;
+  }
+
+  function handleMimeOpts() {
+    var mimeType = document.getElementById('mimeOpt');
+    var selectedMime = mimeType.options[mimeType.selectedIndex].value;
+
+    if (selectedMime == 'Other')
+      document.getElementById('mimeInput').style.display = 'inherit';
+    else
+      document.getElementById('mimeInput').style.display = 'none';
+  }
+
+  function sendModal() {
+    var url = document.getElementById('url-suffix').value;
+    var respTxt = document.getElementById('responseText').value;
+    var mimeType = document.getElementById('mimeOpt');
+    var mimeInput = document.getElementById('mimeInput').value;
+
+    var selectedMime = mimeType.options[mimeType.selectedIndex].value;
+    if (selectedMime != 'Other')
+      mimeInput = selectedMime;
+
+    var configRequest = 'responseText=' + encodeURIComponent(respTxt) +
+      '&url=' + encodeURIComponent(url) +
+      '&mimetype=' + encodeURIComponent(mimeInput);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/api/v1/config/{{bin.name}}', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function () {
+      if (this.readyState === XMLHttpRequest.DONE) {
+        var obj = JSON.parse(this.response);
+        if (obj['result'] != 0)
+          alert("Unable to change bin settings:\n" + obj['error']);
+        else {
+          var smallUrl = document.getElementById('bin-url');
+          var largeUrl = document.getElementById('bin-url-lg');
+
+          if (smallUrl) {
+            smallUrl.value = "{{ base_url }}/" + url;
+            smallUrl.defaultValue = "{{ base_url }}/" + url;
+          }
+          if (largeUrl) {
+            largeUrl.value = "{{ base_url }}/" + url;
+            largeUrl.defaultValue = "{{ base_url }}/" + url;
+          }
+          hideModal();
+        }
+      }
+    }
+    xhr.send(configRequest);
+  }
+
+  function addError(reason, e) {
+    console.log(e);
+    var reqDiv = document.createElement('div');
+    reqDiv.className = 'message-wrapper error-box';
+    var ht = `<div class="message-list"><div class="row-fluid">
+              <b>An error occurred ${escapeHtml(reason)}</b> <br>
+              <b>${escapeHtml(e.name)}:</b> ${escapeHtml(e.message)} <br>
+              <div class="row-fluid"><div class="span1"></div><div class="span11">
+              ${escapeHtml(e.stack).replace('\n', '<br>')}</div></div>
+              <span>Refreshing page may solve the issue</span></div></div>`;
+    reqDiv.innerHTML = ht;
+    document.getElementsByClassName('content-wrap')[0].prepend(reqDiv);
+  }
+
+  function addRequestPriv(request) {
+    // Input JSON processing
+    // 1. Check for required fields
+    var requiredFields = ['id', 'method', 'path', 'content_type', 'content_length',
+                          'exact_time', 'remote_addr', 'form_data', 'query_string',
+                          'headers', 'raw'];
+    for(var i = 0; i < requiredFields.length; i++)
+      if(!(requiredFields[i] in request))
+        throw Error(`Provided JSON does not contain field ${requiredFields[i]}`);
+    // 2. Generate necessary additional fields
+    request.query_string_qs = "?";
+    for(var key in request.query_string) {
+      request.query_string_qs += escapeHtml(key) + '=' + escapeHtml(request.query_string[key]) + '&amp;';
+    }
+    if(request.query_string_qs.endsWith('&amp;'))
+      request.query_string_qs = request.query_string_qs.substring(0, request.query_string_qs.length - 5);
+    // 3. Protect against XXS
+    request.id = parseInt(request.id);
+    request.method = escapeHtml(request.method);
+    request.path = escapeHtml(request.path);
+    request.content_type = escapeHtml(request.content_type);
+    request.content_length = escapeHtml(request.content_length);
+    request.exact_time = escapeHtml(request.exact_time);
+    request.remote_addr = escapeHtml(request.remote_addr);
+    
+    // Render new request
+    var reqDiv = document.createElement('div');
+    reqDiv.id = `message-wrapper-${request.id}`;
+    reqDiv.className = 'message-wrapper';
+    var ht = `<div class="message-list">
+        <div class="row-fluid">
+            <div class="span4">
+                {{ base_url }}<br>
+                <span class="method">${request.method}</span>
+                <span class="absolute-path">${request.path}</span><span class="querystring">${request.query_string_qs}</span>
+            </div>
+            <div class="span6 content">`;
+    if (request.content_type != '')
+      ht += `<i class="icon-code"></i>`;
+
+    ht += ` ${request.content_type}<br> <i class="icon-cloud-upload"></i> ${request.content_length}
+            </div>
+            <div class="span2" class="timestamp">
+                <span title="${request.exact_time}">${request.approximate_time} ago
+                <a href="#${request.id}"><i class="icon-link"></i></a>
+                </span><br>
+                From ${request.remote_addr}
+            </div>
+        </div>
+    </div>
+    <div id="detail-${request.id}" class="message-detail">`;
+    reqDiv.innerHTML = ht;
+    
+    // Message detail
+    var details = reqDiv.getElementsByClassName('message-detail')[0];
+    
+    var rdet = document.createElement('div');
+    rdet.id = `request-detail-${request.id}`;
+    rdet.className = "request-detail";
+      var row = document.createElement('div');
+      row.className = "row-fluid";
+        var span4 = document.createElement('div', {className: "span4"}, "");
+        span4.className = "span4";
+            var h5 = document.createElement('h5');
+            h5.innerText = "FORM/POST PARAMETERS";
+            span4.append(h5);
+
+            if(Object.keys(request.form_data).length == 0) {
+              var em = document.createElement("em");
+              em.innerText = 'None'
+              span4.append(em);
+            } else for (const [ key, value ] of Object.entries(request.form_data)) {
+              var p = document.createElement("p");
+              p.className = "keypair";
+              p.innerHTML = `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(value)}`;
+              span4.append(p);
+            }
+
+            if(Object.keys(request.query_string).length != 0) {
+              var h5 = document.createElement('h5');
+              h5.innerText = "QUERYSTRING";
+              span4.append(h5);
+              for (const [ key, value ] of Object.entries(request.query_string)) {
+                var p = document.createElement("p");
+                p.className = "keypair";
+                if(value != '')
+                  p.innerHTML = `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(value)}`;
+                else
+                  p.innerHTML = `<strong>${escapeHtml(key)}</strong>`;
+                span4.append(p);
+              }
+            }
+        row.append(span4);
+
+        var span8 = document.createElement('div', {className: "span8"}, "");
+        span8.className = "span8";
+          if(Object.keys(request.headers).length != 0) {
+              var h5 = document.createElement('h5');
+              h5.innerText = "HEADERS";
+              span8.append(h5);
+              for (const [ key, value ] of Object.entries(request.headers)) {
+                var p = document.createElement("p");
+                p.className = "keypair";
+                p.innerHTML = `<strong>${escapeHtml(key)}:</strong> ${escapeHtml(value)}`;
+                span8.append(p);
+              }
+            }
+        row.append(span8);
+      rdet.append(row);
+      
+      var h5 = document.createElement('h5');
+      h5.innerText = "RAW BODY";
+      rdet.append(h5);
+
+      var rbody = document.createElement('div');
+      rbody.className = "request-body";
+      rbody.setAttribute("data-id", String(request.id));
+            var rbody_pre = document.createElement('pre');
+            rbody_pre.className = "body prettyprint";
+            if(request.raw.length == 0)
+              rbody_pre.innerText = "None";
+            else
+              rbody_pre.innerText = request.raw;
+            rbody.append(rbody_pre);
+
+      rdet.append(rbody);
+    details.append(rdet);
+    document.getElementsByClassName('content-wrap')[0].prepend(reqDiv);
+
+    // Recolor syntax
+    prettyPrint();
+  }
+
+  function addRequest(request) {
+    try {
+        addRequestPriv(request);
+    } catch (e) {
+      addError('while adding new request', e);
+    }
+  }
 </script>
 {% endblock %}
 
 {% block content %}
-    {% for request in bin.requests %}
-      <div class="message-wrapper" id="message-wrapper-{{request.id}}">
-        <div class="message-list">
-          <div class="row-fluid">
-            <div class="span4">
-              {{base_url}}<br>
-              <span class="method">{{request.method}}</span>
-              <span class="absolute-path">{{request.path}}</span><span class="querystring">{{request.query_string|to_qs}}</span>
-            </div>
-            <div class="span6 content">
-              {% if request.content_type %}<i class="icon-code"></i>{% endif %} {{request.content_type}}<br>
-              <i class="icon-cloud-upload"></i> {{request.content_length|friendly_size}}
-            </div>
-            <div class="span2" class="timestamp">
-              <span title="{{request.time|exact_time}}">{{request.time|approximate_time}} ago
-                <a href="#{{request.id}}"><i class="icon-link"></i></a>
-              </span><br>
-              From {{request.remote_addr}}
-            </div>
-          </div>
-        </div>
-
-        <div id="detail-{{request.id}}" class="message-detail">
-            {{ message_detail(request) }}
-        </div>
+{% for request in bin.requests %}
+<div class="message-wrapper" id="message-wrapper-{{request.id}}">
+  <div class="message-list">
+    <div class="row-fluid">
+      <div class="span4">
+        {{base_url}}<br>
+        <span class="method">{{request.method}}</span>
+        <span class="absolute-path">{{request.path}}</span><span
+          class="querystring">{{request.query_string|to_qs}}</span>
       </div>
-    {% else %}
+      <div class="span6 content">
+        {% if request.content_type %}<i class="icon-code"></i>{% endif %} {{request.content_type}}<br>
+        <i class="icon-cloud-upload"></i> {{request.content_length|friendly_size}}
+      </div>
+      <div class="span2" class="timestamp">
+        <span title="{{request.time|exact_time}}">{{request.time|approximate_time}} ago
+          <a href="#{{request.id}}"><i class="icon-link"></i></a>
+        </span><br>
+        From {{request.remote_addr}}
+      </div>
+    </div>
+  </div>
 
-      <h4 class="text-center">Bin URL</h4>
-      <h2 class="text-center">
-        <input id="bin-url-lg" class="xxlarge input-xxlarge" type="text" defaultValue="{{base_url}}/{{bin.url}}" value="{{base_url}}/{{bin.url}}" onclick="this.select()" onchange="blockModif()" style="border-color: rgb{{bin.color}}; border-width: 3px; background-color: #000; color:#fff" /></h2>
-      <p class="text-center">{% if bin.private %}This is a private bin. Requests are only viewable from this computer.{% endif %}
+  <div id="detail-{{request.id}}" class="message-detail">
+    {{ message_detail(request) }}
+  </div>
+</div>
+{% else %}
 
-      <hr>
-      <div class="row-fluid">
-        <div class="span6 offset3">
+<h4 class="text-center">Bin URL</h4>
+<h2 class="text-center">
+  <input id="bin-url-lg" class="xxlarge input-xxlarge" type="text" defaultValue="{{base_url}}/{{bin.url}}"
+    value="{{base_url}}/{{bin.url}}" onclick="this.select()" onchange="blockModif()"
+    style="border-color: rgb{{bin.color}}; border-width: 3px; background-color: #000; color:#fff" /></h2>
+<p class="text-center">{% if bin.private %}This is a private bin. Requests are only viewable from this
+  computer.{% endif %}
+
+  <hr>
+  <div class="row-fluid">
+    <div class="span6 offset3">
 
       <h4>Make a request to get started.</h4>
 
@@ -158,100 +330,101 @@ request(url, function (error, response, body) {
     echo $result;
 ?&gt;</pre>
 
+    </div>
+  </div>
+
+  {% endfor %}
+
+  <hr>
+
+  <div class="alert-message block-message info">
+    <h4>Limits</h4>
+    <p>This {% if bin.private %}<strong>private</strong>{% endif %}
+      bin will keep the last {{ max_requests }} requests (max. {{ bin_max_size }}MB each) made to it and remain
+      available for {{ bin_ttl }} hours after it was created.
+      However, data might be cleared at any time, so <strong>treat bins as highly ephemeral</strong>.</p>
+
+  </div>
+  <div id="settingsModal" class="modal hide" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" onclick="hideModal()">&times;</button>
+          <h4 class="modal-title">Bin settings</h4>
+        </div>
+        <div class="modal-body">
+          <form class="cform">
+            <div class="cform-row">
+              <p class="span3">URL suffix:</p>
+              <input id="url-suffix" class="span9" type="text" value="{{bin.url}}" />
+            </div>
+            <div class="cform-row">
+              <p class="span3">Response text:</p>
+              <textarea id="responseText" class="span9">{{responseText}}</textarea>
+            </div>
+            <div class="cform-row">
+              <p class="span3">Response MIME:</p>
+              <select id="mimeOpt" class="span9" onchange="handleMimeOpts()">
+                <option>text/html</option>
+                <option>application/javascript</option>
+                <option>image/png</option>
+                <option>text/css</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="cform-row">
+              <p class="span3"></p>
+              <input id="mimeInput" class="span9 hide" type="text" placeholder="Other MIME type" />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="cbtn cbtn-success" onclick="sendModal()">Save</button>
+          <button type="button" class="cbtn cbtn-secondary" onclick="hideModal()">Cancel</button>
         </div>
       </div>
 
-    {% endfor %}
-
-      <hr>
-
-      <div class="alert-message block-message info">
-        <h4>Limits</h4>
-        <p>This {% if bin.private %}<strong>private</strong>{% endif %}
-        bin will keep the last {{ max_requests }} requests (max. {{ bin_max_size }}MB each) made to it and remain available for {{ bin_ttl }} hours after it was created.
-        However, data might be cleared at any time, so <strong>treat bins as highly ephemeral</strong>.</p>
-
-      </div>
-      <div id="settingsModal" class="modal hide" role="dialog">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" onclick="hideModal()">&times;</button>
-              <h4 class="modal-title">Bin settings</h4>
-            </div>
-            <div class="modal-body">
-              <form class="cform">
-                <div class="cform-row">
-                  <p class="span3">URL suffix:</p>
-                  <input id="url-suffix" class="span9" type="text" value="{{bin.url}}" />
-                </div>
-                <div class="cform-row">
-                  <p class="span3">Response text:</p>
-                  <textarea id="responseText" class="span9">{{responseText}}</textarea>
-                </div>
-                <div class="cform-row">
-                  <p class="span3">Response MIME:</p>
-                  <select id="mimeOpt" class="span9" onchange="handleMimeOpts()">
-                    <option>text/html</option>
-                    <option>application/javascript</option>
-                    <option>image/png</option>
-                    <option>text/css</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div class="cform-row">
-                  <p class="span3"></p>
-                  <input id="mimeInput" class="span9 hide" type="text" placeholder="Other MIME type" />
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="cbtn cbtn-success" onclick="sendModal()">Save</button>
-              <button type="button" class="cbtn cbtn-secondary" onclick="hideModal()">Cancel</button>
-            </div>
-          </div>
-      
-        </div>
-      </div>
-{% endblock %}
+    </div>
+  </div>
+  {% endblock %}
 
 
-{% macro message_detail(request) %}
-<div id="request-detail-{{request.id}}" class="request-detail">
+  {% macro message_detail(request) %}
+  <div id="request-detail-{{request.id}}" class="request-detail">
     <div class="row-fluid">
       <div class="span4">
         <h5>FORM/POST PARAMETERS</h5>
         {% for k,v in request.form_data %}
-          <p class="keypair"><strong>{{k}}:</strong> {{v}}</p>
+        <p class="keypair"><strong>{{k}}:</strong> {{v}}</p>
         {% else %}
-          <em>None</em>
+        <em>None</em>
         {% endfor %}
 
         {% if request.query_string and not request.query_string is string %}
-          <h5>QUERYSTRING</h5>
-          {% for k,v in request.query_string|dictsort: %}
-            {% if not v %}
-              <p class="keypair"><strong>{{k}}</strong></p>
-            {% else %}
-              <p class="keypair"><strong>{{k}}:</strong> {{v}}</p>
-            {% endif %}
-          {% endfor %}
+        <h5>QUERYSTRING</h5>
+        {% for k,v in request.query_string|dictsort: %}
+        {% if not v %}
+        <p class="keypair"><strong>{{k}}</strong></p>
+        {% else %}
+        <p class="keypair"><strong>{{k}}:</strong> {{v}}</p>
+        {% endif %}
+        {% endfor %}
         {% endif %}
       </div>
       <div class="span8">
         {% if request.headers %}
-          <h5>HEADERS</h5>
-            {% for header in request.headers.items() %}
-              <p class="keypair"><strong>{{header.0}}:</strong> {{header.1|escape}}</p>
-            {% endfor %}
+        <h5>HEADERS</h5>
+        {% for header in request.headers.items() %}
+        <p class="keypair"><strong>{{header.0}}:</strong> {{header.1|escape}}</p>
+        {% endfor %}
         {% endif %}
       </div>
     </div>
 
     <h5>RAW BODY</h5>
     <div class="request-body" data-id="{{ request.id }}">
-<pre class="body prettyprint">{%if request.raw%}{{request.raw}}{%else%}<em>None</em>{%endif%}</pre>
+      <pre class="body prettyprint">{%if request.raw%}{{request.raw}}{%else%}<em>None</em>{%endif%}</pre>
 
+    </div>
   </div>
-</div>
-{% endmacro %}
+  {% endmacro %}

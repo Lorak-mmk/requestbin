@@ -614,6 +614,11 @@ input.xxlarge {
 }
 
 
+.error-box {
+  background-color: #c61515;
+  border-bottom: 0;
+}
+
 .footer {
   position: absolute;
   bottom: 0;
