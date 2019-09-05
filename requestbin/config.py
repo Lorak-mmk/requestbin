@@ -9,7 +9,7 @@ PORT_NUMBER = 4000
 ENABLE_CORS = True
 CORS_ORIGINS = "*"
 
-FLASK_SESSION_SECRET_KEY = os.environ.get("SESSION_SECRET_KEY", "N1BKhJLnBqLpexOZdklsfDKFJDKFadsfs9a3r324YB7B73AglRmrHMDQ9RhXz35")
+FLASK_SESSION_SECRET_KEY = os.urandom(42)
 
 BIN_TTL = 48*3600
 STORAGE_BACKEND = "requestbin.storage.memory.MemoryStorage"
@@ -32,9 +32,7 @@ BUGSNAG_KEY = ""
 
 if REALM == 'prod':
     DEBUG = True
-    ROOT_URL = "http://requestb.in"
-
-    FLASK_SESSION_SECRET_KEY = os.environ.get("SESSION_SECRET_KEY", FLASK_SESSION_SECRET_KEY)
+    ROOT_URL = os.environ.get("SERVER_DOMAIN", "http://example.com")
 
     STORAGE_BACKEND = "requestbin.storage.redis.RedisStorage"
 
