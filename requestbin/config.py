@@ -31,8 +31,10 @@ REDIS_PREFIX = "requestbin"
 BUGSNAG_KEY = ""
 
 if REALM == 'prod':
-    DEBUG = True
-    ROOT_URL = os.environ.get("SERVER_DOMAIN", "http://example.com")
+    DEBUG = False
+    ROOT_URL = "http://bin.armiaprezesa.pl/"
+
+    FLASK_SESSION_SECRET_KEY = os.environ.get("SESSION_SECRET_KEY", FLASK_SESSION_SECRET_KEY)
 
     STORAGE_BACKEND = "requestbin.storage.redis.RedisStorage"
 

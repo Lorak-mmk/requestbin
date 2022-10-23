@@ -55,7 +55,7 @@ class RedisStorage():
         self.redis.expireat(key, int(bin.created+self.bin_ttl))
 
     def set_bin_url(self, bin, url):
-        self.redis.delete(bin.url)          # This might be expected behaviour
+        self.redis.delete(self._key(config.URL_DB_PREFIX + bin.url))          # This might be expected behaviour
 
         bin.url = url
         url = self._key(config.URL_DB_PREFIX + url)
@@ -94,7 +94,7 @@ class RedisStorage():
         if binKey is None:
             raise KeyError("Bin not found 2")
 
-        serialized_bin = self.redis.get(self._key(binKey))
+        serialized_bin = self.redis.get(binKey)
         try:
             bin = Bin.load(serialized_bin)
             return bin
